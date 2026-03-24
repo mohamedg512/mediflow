@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediFlow — Clinic Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Medical Teal (Green-Blue) palette */
+  --med-950:#07201e;
+  --med-900:#0d2d2a;
+  --med-800:#0f3d39;
+  --med-700:#145450;
+  --med-600:#196e68;
+  --med-500:#1a8a82;
+  --med-400:#20a89e;
+  --med-300:#3ec9bf;
+  --med-200:#7dddd8;
+  --med-100:#c4f0ed;
+  --med-50:#edfbfa;
+  --white:#ffffff;
+  --white-90:rgba(255,255,255,1.0);
+  --white-70:rgba(255,255,255,0.92);
+  --white-50:rgba(255,255,255,0.80);
+  --white-20:rgba(255,255,255,0.45);
+  --white-10:rgba(255,255,255,0.1);
+  --white-07:rgba(255,255,255,0.07);
+  --accent:#3ec9bf;
+  --accent-soft:rgba(62,201,191,0.15);
+  --gold:#e8b84b;
+  --font-en:'Inter',sans-serif;
+  --font-ar:'Tajawal',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --font:var(--font-en);
+  --radius-sm:8px;
+  --radius-md:14px;
+  --radius-lg:22px;
+  --radius-xl:32px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--med-900);color:#ffffff;overflow-x:hidden}
+body[lang="ar"]{font-family:var(--font-ar)}
+
+/* ─── NOISE ─── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:0.35;
+}
+
+/* ─── LANGUAGE SWITCHER ─── */
+.lang-bar{
+  position:fixed;top:0;right:0;left:0;z-index:200;
+  display:flex;justify-content:flex-end;align-items:center;
+  padding:8px 40px;
+  background:rgba(7,32,30,0.9);
+  border-bottom:1px solid rgba(62,201,191,0.08);
+  gap:4px;
+}
+[dir="rtl"] .lang-bar{justify-content:flex-start}
+.lang-btn{
+  background:none;border:1px solid transparent;
+  color:rgba(255,255,255,0.80);font-size:12px;font-weight:600;
+  padding:4px 12px;border-radius:50px;cursor:pointer;
+  transition:all .2s;font-family:inherit;
+  letter-spacing:.04em;
+}
+.lang-btn:hover{color:#ffffff;border-color:rgba(255,255,255,0.45)}
+.lang-btn.active{
+  background:rgba(62,201,191,0.15);
+  border-color:rgba(62,201,191,0.4);
+  color:var(--accent);
+}
+
+/* ─── NAV ─── */
+nav{
+  position:fixed;top:36px;right:0;left:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 40px;
+  background:rgba(13,61,57,0.92);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(62,201,191,0.1);
+}
+.nav-logo{display:flex;align-items:center;gap:12px}
+.nav-logo img{height:38px;width:auto;object-fit:contain}
+.nav-logo-fallback{
+  height:38px;
+  background:linear-gradient(135deg,var(--med-500),var(--med-300));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  padding:0 14px;
+  font-size:15px;font-weight:800;color:#fff;letter-spacing:.03em;
+  box-shadow:0 4px 18px rgba(26,138,130,0.4);
+  white-space:nowrap;
+}
+.nav-cta{
+  background:linear-gradient(135deg,var(--med-500),var(--med-400));
+  color:#fff;border:none;padding:10px 26px;border-radius:50px;
+  font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  transition:all .2s;box-shadow:0 4px 18px rgba(26,138,130,0.35);
+  letter-spacing:.02em;
+}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(26,138,130,0.55)}
+
+/* ─── HERO ─── */
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  padding:160px 40px 90px;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% -10%, rgba(26,138,130,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 85% 75%, rgba(62,201,191,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 10% 60%, rgba(26,138,130,0.06) 0%, transparent 60%),
+    linear-gradient(180deg, var(--med-950) 0%, #07201e 100%);
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(62,201,191,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(62,201,191,0.035) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 40%, black 0%, transparent 80%);
+}
+/* Cross pattern */
+.hero-cross{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(62,201,191,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(62,201,191,0.06) 1px, transparent 1px);
+  background-size:320px 320px;
+  mask-image:radial-gradient(ellipse 70% 60% at 50% 40%, black 0%, transparent 80%);
+}
+.hero-content{
+  position:relative;z-index:1;
+  max-width:820px;text-align:center;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:9px;
+  background:rgba(62,201,191,0.08);border:1px solid rgba(62,201,191,0.22);
+  padding:7px 20px;border-radius:50px;
+  font-size:12.5px;color:var(--med-300);font-weight:600;
+  margin-bottom:30px;letter-spacing:.06em;text-transform:uppercase;
+  animation:fadeInDown .6s ease both;
+}
+.hero-badge::before{
+  content:'';width:7px;height:7px;
+  background:var(--accent);border-radius:50%;
+  box-shadow:0 0 8px var(--accent);
+  animation:blink 2s infinite;
+}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+
+.hero h1{
+  font-size:clamp(2.4rem,5.5vw,4.4rem);
+  font-weight:900;line-height:1.08;
+  letter-spacing:-.02em;
+  margin-bottom:26px;
+  animation:fadeInUp .7s ease .1s both;
+}
+.hero h1 .hl{
+  background:linear-gradient(135deg,var(--accent),var(--med-200));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-desc{
+  font-size:1.1rem;color:rgba(255,255,255,0.80);
+  line-height:1.85;max-width:600px;margin:0 auto 44px;
+  font-weight:400;
+  animation:fadeInUp .7s ease .2s both;
+}
+.hero-actions{
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+  animation:fadeInUp .7s ease .3s both;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--med-500),var(--med-400));
+  color:#fff;border:none;padding:15px 40px;border-radius:50px;
+  font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;
+  transition:all .25s;box-shadow:0 8px 32px rgba(26,138,130,0.45);
+  letter-spacing:.02em;
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(26,138,130,0.65)}
+.btn-outline{
+  background:transparent;color:var(--med-300);
+  border:1.5px solid rgba(62,201,191,0.3);padding:15px 40px;
+  border-radius:50px;font-family:var(--font);font-size:15px;
+  font-weight:600;cursor:pointer;transition:all .25s;
+  letter-spacing:.02em;
+}
+.btn-outline:hover{background:rgba(62,201,191,0.07);border-color:var(--accent);transform:translateY(-3px)}
+
+/* floating cards */
+.hero-float{
+  position:absolute;z-index:1;
+  background:rgba(13,61,57,0.85);
+  border:1px solid rgba(62,201,191,0.18);
+  border-radius:16px;padding:16px 20px;
+  backdrop-filter:blur(12px);
+  animation:float 6s ease-in-out infinite;
+  display:none;
+}
+@media(min-width:1100px){.hero-float{display:block}}
+.hero-float-1{right:4%;top:28%;animation-delay:0s}
+.hero-float-2{left:3%;top:38%;animation-delay:2s}
+.hero-float-3{right:7%;bottom:24%;animation-delay:4s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.float-icon{font-size:22px;margin-bottom:5px}
+.float-label{font-size:10.5px;color:var(--med-300);font-weight:700;margin-bottom:3px;letter-spacing:.04em;text-transform:uppercase}
+.float-val{font-size:20px;font-weight:800;color:#fff;font-family:var(--mono)}
+
+/* ─── SECTION COMMONS ─── */
+.section{padding:90px 40px;max-width:1140px;margin:0 auto;position:relative;z-index:1}
+.section-tag{
+  display:inline-block;background:rgba(62,201,191,0.08);
+  border:1px solid rgba(62,201,191,0.22);
+  color:var(--med-300);font-size:11.5px;font-weight:700;
+  padding:5px 16px;border-radius:50px;margin-bottom:16px;
+  letter-spacing:.07em;text-transform:uppercase;
+}
+.section-title{font-size:clamp(1.8rem,3.8vw,2.8rem);font-weight:800;margin-bottom:14px;line-height:1.15;letter-spacing:-.015em}
+.section-desc{font-size:1rem;color:rgba(255,255,255,0.80);max-width:560px;line-height:1.85}
+
+/* ─── FEATURES ─── */
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+  gap:18px;margin-top:52px;
+}
+.feat-card{
+  background:rgba(13,61,57,0.35);border:1px solid rgba(62,201,191,0.22);
+  border-radius:var(--radius-lg);padding:30px;
+  transition:all .28s;cursor:default;
+  position:relative;overflow:hidden;
+}
+.feat-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 60% at 50% 0%,rgba(62,201,191,0.07),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.feat-card:hover{border-color:rgba(62,201,191,0.28);transform:translateY(-5px);box-shadow:0 22px 44px rgba(0,0,0,0.3)}
+.feat-card:hover::after{opacity:1}
+.feat-icon{
+  width:54px;height:54px;
+  background:linear-gradient(135deg,rgba(26,138,130,0.28),rgba(62,201,191,0.12));
+  border:1px solid rgba(62,201,191,0.18);
+  border-radius:15px;display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-bottom:18px;
+}
+.feat-title{font-size:1rem;font-weight:700;margin-bottom:9px;color:#fff}
+.feat-desc{font-size:.88rem;color:rgba(255,255,255,0.80);line-height:1.75}
+
+/* lang tags */
+.lang-support{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.lang-tag{
+  background:rgba(62,201,191,0.07);border:1px solid rgba(62,201,191,0.13);
+  border-radius:7px;padding:4px 11px;font-size:.78rem;
+  color:rgba(255,255,255,0.80);
+}
+
+/* ─── HOW IT WORKS ─── */
+.how-section{
+  padding:90px 40px;
+  background:rgba(13,61,57,0.18);
+  border-top:1px solid rgba(62,201,191,0.06);
+  border-bottom:1px solid rgba(62,201,191,0.06);
+  position:relative;z-index:1;
+}
+.how-inner{max-width:1140px;margin:0 auto}
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;margin-top:52px;position:relative}
+.steps-grid::before{
+  content:'';position:absolute;top:29px;right:13%;left:13%;
+  height:1px;background:linear-gradient(90deg,transparent,rgba(62,201,191,0.28),transparent);
+  display:none;
+}
+@media(min-width:800px){.steps-grid::before{display:block}}
+.step{text-align:center;padding:0 22px;position:relative}
+.step-num{
+  width:60px;height:60px;
+  background:linear-gradient(135deg,var(--med-700),var(--med-600));
+  border:2px solid rgba(62,201,191,0.28);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:900;color:var(--med-200);
+  margin:0 auto 22px;position:relative;z-index:1;
+  font-family:var(--mono);
+  box-shadow:0 0 28px rgba(26,138,130,0.28);
+}
+.step-title{font-size:1rem;font-weight:700;margin-bottom:9px}
+.step-desc{font-size:.875rem;color:rgba(255,255,255,0.80);line-height:1.75}
+
+/* ─── LICENSE ─── */
+.license-section{
+  padding:70px 40px;max-width:1140px;margin:0 auto;
+  position:relative;z-index:1;
+}
+.license-box{
+  background:linear-gradient(135deg,rgba(20,84,80,0.5),rgba(13,61,57,0.7));
+  border:1px solid rgba(62,201,191,0.18);
+  border-radius:26px;padding:52px;
+  position:relative;overflow:hidden;
+}
+.license-box::before{
+  content:'';position:absolute;top:-40%;left:-20%;
+  width:520px;height:520px;
+  background:radial-gradient(circle,rgba(62,201,191,0.05),transparent 70%);
+  pointer-events:none;
+}
+.license-icon{font-size:48px;margin-bottom:18px}
+.license-title{font-size:1.7rem;font-weight:800;margin-bottom:12px}
+.license-desc{font-size:1rem;color:rgba(255,255,255,0.80);line-height:1.85;max-width:620px}
+.license-list{
+  margin-top:26px;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:12px;
+}
+.license-item{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(62,201,191,0.07);border:1px solid rgba(62,201,191,0.13);
+  border-radius:10px;padding:12px 16px;
+  font-size:.88rem;color:rgba(255,255,255,0.92);
+}
+.license-item::before{content:'✓';color:var(--accent);font-weight:800;flex-shrink:0}
+
+/* ─── PRICING ─── */
+.pricing-section{padding:90px 40px;max-width:1140px;margin:0 auto;position:relative;z-index:1}
+.pricing-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(295px,1fr));
+  gap:22px;margin-top:52px;align-items:start;
+}
+.plan{
+  background:rgba(13,61,57,0.38);border:1px solid rgba(62,201,191,0.22);
+  border-radius:26px;padding:38px;
+  position:relative;transition:all .3s;overflow:hidden;
+}
+.plan::before{
+  content:'';position:absolute;top:0;right:0;left:0;height:3px;
+  background:linear-gradient(90deg,transparent,rgba(62,201,191,0.28),transparent);
+}
+.plan.popular{
+  background:linear-gradient(135deg,rgba(26,138,130,0.28),rgba(13,61,57,0.5));
+  border-color:rgba(62,201,191,0.38);
+  transform:scale(1.025);
+  box-shadow:0 32px 64px rgba(0,0,0,0.38),0 0 0 1px rgba(62,201,191,0.28);
+}
+.plan.popular::before{background:linear-gradient(90deg,transparent,var(--med-400),transparent);height:4px}
+.plan.premium::before{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.plan-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--med-500),var(--med-400));
+  color:#fff;font-size:11px;font-weight:700;
+  padding:4px 14px;border-radius:50px;margin-bottom:22px;
+  letter-spacing:.05em;text-transform:uppercase;
+}
+.plan.premium .plan-badge{background:linear-gradient(135deg,#9a6a00,var(--gold))}
+.plan-name{font-size:1.1rem;font-weight:800;color:var(--med-200);margin-bottom:8px}
+.plan-price{
+  font-size:2.7rem;font-weight:900;color:#fff;
+  font-family:var(--mono);margin-bottom:4px;line-height:1;
+}
+.plan-price span{font-size:1.05rem;color:var(--med-300);font-family:var(--font);font-weight:600}
+.plan-period{font-size:.85rem;color:rgba(255,255,255,0.80);margin-bottom:28px}
+.plan-divider{height:1px;background:rgba(62,201,191,0.09);margin-bottom:24px}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:34px}
+.plan-features li{
+  display:flex;align-items:center;gap:11px;
+  font-size:.88rem;color:rgba(255,255,255,0.92);
+}
+.plan-features li::before{
+  content:'✓';
+  width:22px;height:22px;flex-shrink:0;
+  background:rgba(62,201,191,0.12);border:1px solid rgba(62,201,191,0.22);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:var(--accent);
+  line-height:22px;text-align:center;
+}
+.plan.premium .plan-features li::before{
+  background:rgba(232,184,75,0.12);border-color:rgba(232,184,75,0.28);color:var(--gold)
+}
+.plan-btn{
+  width:100%;padding:14px;border-radius:14px;
+  border:none;font-family:var(--font);font-size:14.5px;font-weight:700;
+  cursor:pointer;transition:all .25s;letter-spacing:.02em;
+}
+.plan-btn-default{
+  background:rgba(62,201,191,0.08);
+  border:1.5px solid rgba(62,201,191,0.22) !important;
+  color:var(--med-300);
+}
+.plan-btn-default:hover{background:rgba(62,201,191,0.16);transform:translateY(-2px)}
+.plan-btn-popular{
+  background:linear-gradient(135deg,var(--med-500),var(--med-400));
+  color:#fff;box-shadow:0 8px 28px rgba(26,138,130,0.42);
+}
+.plan-btn-popular:hover{transform:translateY(-3px);box-shadow:0 14px 38px rgba(26,138,130,0.62)}
+.plan-btn-premium{
+  background:linear-gradient(135deg,#8a5f00,var(--gold));
+  color:#fff;box-shadow:0 8px 28px rgba(232,184,75,0.28);
+}
+.plan-btn-premium:hover{transform:translateY(-3px);box-shadow:0 14px 38px rgba(232,184,75,0.48)}
+
+/* ─── ORDER FORM ─── */
+.order-section{
+  padding:90px 40px;
+  background:rgba(13,61,57,0.18);
+  border-top:1px solid rgba(62,201,191,0.06);
+  position:relative;z-index:1;
+}
+.order-inner{max-width:620px;margin:0 auto;text-align:center}
+.order-form-wrap{
+  background:rgba(10,45,42,0.82);
+  border:1px solid rgba(62,201,191,0.18);
+  border-radius:26px;padding:46px;
+  margin-top:42px;text-align:left;
+  box-shadow:0 32px 64px rgba(0,0,0,0.3);
+  backdrop-filter:blur(22px);
+}
+[dir="rtl"] .order-form-wrap{text-align:right}
+.form-group{margin-bottom:20px}
+.form-label{
+  display:block;font-size:.88rem;font-weight:600;
+  color:var(--med-200);margin-bottom:8px;
+}
+.form-label .req{color:var(--med-400);margin-inline-end:3px}
+.form-input,.form-select{
+  width:100%;background:rgba(62,201,191,0.05);
+  border:1.5px solid rgba(62,201,191,0.13);
+  border-radius:12px;padding:13px 16px;
+  color:#ffffff;font-family:var(--font);font-size:.93rem;
+  outline:none;transition:all .2s;
+  appearance:none;-webkit-appearance:none;
+}
+[lang="ar"] .form-input,[lang="ar"] .form-select{font-family:var(--font-ar)}
+.form-input::placeholder{color:rgba(255,255,255,0.45)}
+.form-input:focus,.form-select:focus{
+  border-color:var(--med-400);
+  background:rgba(62,201,191,0.09);
+  box-shadow:0 0 0 3px rgba(62,201,191,0.09);
+}
+.form-select option{background:#0f3d39;color:#ffffff}
+.form-submit{
+  width:100%;padding:16px;border-radius:14px;
+  background:linear-gradient(135deg,var(--med-500),var(--med-400));
+  border:none;color:#fff;font-family:var(--font);font-size:15.5px;
+  font-weight:800;cursor:pointer;transition:all .25s;
+  box-shadow:0 8px 28px rgba(26,138,130,0.42);
+  margin-top:8px;letter-spacing:.02em;
+}
+[lang="ar"] .form-submit{font-family:var(--font-ar)}
+.form-submit:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(26,138,130,0.62)}
+.form-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.form-note{
+  font-size:.78rem;color:rgba(255,255,255,0.45);
+  text-align:center;margin-top:14px;line-height:1.65;
+}
+.form-success{display:none;text-align:center;padding:32px}
+.form-success .check{font-size:58px;margin-bottom:18px}
+.form-success h3{font-size:1.4rem;font-weight:800;color:var(--med-300);margin-bottom:10px}
+.form-success p{color:rgba(255,255,255,0.80);line-height:1.75}
+
+/* ─── FOOTER ─── */
+footer{
+  padding:52px 40px 32px;
+  border-top:1px solid rgba(62,201,191,0.09);
+  text-align:center;position:relative;z-index:1;
+}
+.footer-logo{
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:14px;
+}
+.footer-logo img{height:32px;width:auto;object-fit:contain}
+.footer-logo-text{font-size:20px;font-weight:800}
+.footer-logo-text span{color:var(--accent)}
+.footer-desc{font-size:.85rem;color:rgba(255,255,255,0.45);margin-bottom:24px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.65}
+.footer-bottom{font-size:.78rem;color:rgba(255,255,255,0.45);padding-top:20px;border-top:1px solid rgba(62,201,191,0.06)}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(28px);transition:all .75s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  nav{padding:14px 20px;top:36px}
+  .lang-bar{padding:8px 20px}
+  .hero{padding:130px 20px 70px}
+  .section{padding:60px 20px}
+  .how-section{padding:60px 20px}
+  .order-section{padding:60px 20px}
+  .order-form-wrap{padding:28px 22px}
+  .plan.popular{transform:none}
+  .pricing-grid{grid-template-columns:1fr}
+  .license-box{padding:30px 24px}
+}
+</style>
+</head>
+<body lang="en">
+
+<!-- LANG BAR -->
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('en')" id="btn-en">EN</button>
+  <button class="lang-btn" onclick="setLang('fr')" id="btn-fr">FR</button>
+  <button class="lang-btn" onclick="setLang('ar')" id="btn-ar">عربي</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <img src="modiflowlogo.png" alt="MediFlow"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="nav-logo-fallback" style="display:none">Medi<span style="color:var(--accent);margin-left:1px">Flow</span></div>
+  </div>
+  <button class="nav-cta" id="nav-cta-btn" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">Get Started</button>
+</nav>
+
+<!-- HERO -->
+<!-- HERO -->
+<section class="hero" style="position: relative; overflow: hidden; min-height: 100vh;">
+
+  <!-- خلفية بسيطة ومضمونة على الهواتف -->
+  <div class="hero-bg"
+       style="position: absolute;
+              inset: 0;
+              z-index: 0;
+              background-image: 
+                linear-gradient(rgba(7,32,30,0.85), rgba(7,32,30,0.85)),
+                url('header.png');
+              background-size: cover;
+              background-position: center 30%;
+              background-repeat: no-repeat;
+              background-attachment: scroll;
+              opacity: 0.9;">
+  </div>
+
+  <div class="hero-grid"></div>
+  <div class="hero-cross"></div>
+
+  <!-- Floating Cards (كما هي) -->
+  <div class="hero-float hero-float-1">
+    <div class="float-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M12 11v4M10 13h4"/></svg></div>
+    <div class="float-label" data-i18n="float1-label">Today's Patients</div>
+    <div class="float-val">24</div>
+  </div>
+  <div class="hero-float hero-float-2">
+    <div class="float-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+    <div class="float-label" data-i18n="float2-label">Languages</div>
+    <div class="float-val">10</div>
+  </div>
+  <div class="hero-float hero-float-3">
+    <div class="float-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v3"/><circle cx="18" cy="18" r="4"/><path d="M18 14v8M14 18h8"/></svg></div>
+    <div class="float-label" data-i18n="float3-label">Prescription</div>
+    <div class="float-val" data-i18n="float3-val">Ready ✓</div>
+  </div>
+
+  <div class="hero-content" style="position: relative; z-index: 2;">
+    <div class="hero-badge" data-i18n="hero-badge">✦ Complete Medical System</div>
+    <h1 data-i18n="hero-h1">Manage Your Clinic<br>Smarter with <span class="hl">MediFlow</span></h1>
+    <p class="hero-desc" data-i18n="hero-desc">
+      A comprehensive clinic management system — from waiting queues and patient registration, to prescriptions, invoices, and statistics. Everything you need, in one place, in 10 languages.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary" data-i18n="hero-btn1" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Start Subscription</button>
+      <button class="btn-outline" data-i18n="hero-btn2" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore Features</button>
+    </div>
+  </div>
+</section>
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="reveal">
+    <div class="section-tag" data-i18n="feat-tag">Features</div>
+    <div class="section-title" data-i18n="feat-title">Everything a Physician Needs</div>
+    <p class="section-desc" data-i18n="feat-desc">MediFlow is designed specifically for medical clinics, with a simple interface and professional tools that guarantee smooth workflow.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card reveal">
+      <div class="feat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></div>
+      <div class="feat-title" data-i18n="f1-title">Smart Waiting Queue</div>
+      <div class="feat-desc" data-i18n="f1-desc">Daily patient management with automatic numbering and queue card printing. Triage by priority and condition.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5-7-7a5 5 0 1 1 7-7l7 7a5 5 0 1 1-7 7"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></div>
+      <div class="feat-title" data-i18n="f2-title">Professional Prescriptions</div>
+      <div class="feat-desc" data-i18n="f2-desc">Write prescriptions effortlessly with a comprehensive drug database and direct printing in a professional layout.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 8h.01M10 8h7M7 12h7"/></svg></div>
+      <div class="feat-title" data-i18n="f3-title">Invoicing & Analytics</div>
+      <div class="feat-desc" data-i18n="f3-desc">Generate invoices, track payments, and access detailed statistical reports about your clinic's performance.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <div class="feat-title" data-i18n="f4-title">10 Supported Languages</div>
+      <div class="feat-desc" data-i18n="f4-desc">Instant language switching: Arabic, French, English, Spanish, German, Turkish, Russian, Chinese, Portuguese, and Italian.</div>
+      <div class="lang-support">
+        <span class="lang-tag">🇸🇦 Arabic</span>
+        <span class="lang-tag">🇫🇷 Français</span>
+        <span class="lang-tag">🇬🇧 English</span>
+        <span class="lang-tag">🇪🇸 Español</span>
+        <span class="lang-tag">🇩🇪 Deutsch</span>
+        <span class="lang-tag">🇹🇷 Türkçe</span>
+        <span class="lang-tag">🇷🇺 Русский</span>
+        <span class="lang-tag">🇨🇳 中文</span>
+        <span class="lang-tag">🇵🇹 Português</span>
+        <span class="lang-tag">🇮🇹 Italiano</span>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div class="feat-title" data-i18n="f5-title">Patient Records</div>
+      <div class="feat-desc" data-i18n="f5-desc">Complete medical file for each patient: visit history, personal information, and prescription history.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 22c1.4-2 3-3.8 3-6a6 6 0 0 0-6-6c-1.5 0-3 .5-4 1.5"/></svg></div>
+      <div class="feat-title" data-i18n="f6-title">Custom Branding</div>
+      <div class="feat-desc" data-i18n="f6-desc">Personalize prescription and invoice designs with your clinic's logo and complete contact details.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div class="how-section" id="how">
+  <div class="how-inner">
+    <div class="reveal" style="text-align:center">
+      <div class="section-tag" data-i18n="how-tag">How It Works</div>
+      <div class="section-title" data-i18n="how-title">4 Simple Steps</div>
+    </div>
+    <div class="steps-grid">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <div class="step-title" data-i18n="s1-title">Choose a Plan</div>
+        <div class="step-desc" data-i18n="s1-desc">Select the subscription that best fits your clinic's size and budget from the available options.</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">02</div>
+        <div class="step-title" data-i18n="s2-title">Send Your Request</div>
+        <div class="step-desc" data-i18n="s2-desc">Fill in the order form with your name, phone number, and location to receive instant confirmation.</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">03</div>
+        <div class="step-title" data-i18n="s3-title">Receive Your License</div>
+        <div class="step-desc" data-i18n="s3-desc">We send your unique license key within 24 hours via WhatsApp or phone.</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">04</div>
+        <div class="step-title" data-i18n="s4-title">Start Working</div>
+        <div class="step-desc" data-i18n="s4-desc">Activate the system with your key and start managing your clinic immediately with full support.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LICENSE -->
+<div class="license-section">
+  <div class="license-box reveal">
+    <div class="license-icon"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg></div>
+    <div class="license-title" data-i18n="lic-title">Protected License System</div>
+    <p class="license-desc" data-i18n="lic-desc">
+      MediFlow operates with a secure digital licensing system. Each subscription receives a unique license key linked to your device, ensuring system protection and your rights as a user.
+    </p>
+    <div class="license-list">
+      <div class="license-item" data-i18n="li1">Unique license key per client</div>
+      <div class="license-item" data-i18n="li2">Automatic activation on every launch</div>
+      <div class="license-item" data-i18n="li3">Device-bound — secure & protected</div>
+      <div class="license-item" data-i18n="li4">Validity tied to subscription period</div>
+      <div class="license-item" data-i18n="li5">After-sales service guaranteed</div>
+      <div class="license-item" data-i18n="li6">Easy subscription renewal</div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div class="reveal" style="text-align:center">
+    <div class="section-tag" data-i18n="price-tag">Pricing</div>
+    <div class="section-title" data-i18n="price-title">Choose Your Plan</div>
+    <p class="section-desc" style="margin:0 auto" data-i18n="price-desc">Three plans designed to suit different clinic needs.</p>
+  </div>
+  <div class="pricing-grid">
+
+    <!-- Plan 1 -->
+    <div class="plan reveal">
+      <div class="plan-badge" data-i18n="p1-badge">Starter</div>
+      <div class="plan-name" data-i18n="p1-name">5 Months</div>
+      <div class="plan-price">5000 <span data-i18n="currency">DZD</span></div>
+      <div class="plan-period" data-i18n="p1-period">5-month subscription</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li data-i18n="p1-f1">Activate on 2 PCs</li>
+        <li data-i18n="p1-f2">10 supported languages</li>
+        <li data-i18n="p1-f3">Unlimited waiting queue</li>
+        <li data-i18n="p1-f4">Prescriptions & invoices</li>
+        <li data-i18n="p1-f5">After-sales service</li>
+        <li data-i18n="p1-f6">WhatsApp support</li>
+      </ul>
+      <button class="plan-btn plan-btn-default" id="p1-btn" onclick="selectPlan('p1')">Choose Plan</button>
+    </div>
+
+    <!-- Plan 2 — Popular -->
+    <div class="plan popular reveal">
+      <div class="plan-badge" data-i18n="p2-badge">Most Popular ⭐</div>
+      <div class="plan-name" data-i18n="p2-name">Full Year</div>
+      <div class="plan-price">8000 <span data-i18n="currency">DZD</span></div>
+      <div class="plan-period" data-i18n="p2-period">12-month subscription</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li data-i18n="p2-f1">Activate on 4 PCs</li>
+        <li data-i18n="p2-f2">10 supported languages</li>
+        <li data-i18n="p2-f3">Unlimited waiting queue</li>
+        <li data-i18n="p2-f4">Prescriptions & invoices</li>
+        <li data-i18n="p2-f5">After-sales service</li>
+        <li data-i18n="p2-f6">Priority WhatsApp support</li>
+        <li data-i18n="p2-f7">Free updates all year</li>
+      </ul>
+      <button class="plan-btn plan-btn-popular" id="p2-btn" onclick="selectPlan('p2')">Choose Plan</button>
+    </div>
+
+    <!-- Plan 3 — Premium -->
+    <div class="plan premium reveal">
+      <div class="plan-badge" data-i18n="p3-badge">Best Value 👑</div>
+      <div class="plan-name" data-i18n="p3-name">3 Years</div>
+      <div class="plan-price">15000 <span data-i18n="currency">DZD</span></div>
+      <div class="plan-period" data-i18n="p3-period">36-month subscription</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li data-i18n="p3-f1">Activate on 8 PCs</li>
+        <li data-i18n="p3-f2">10 supported languages</li>
+        <li data-i18n="p3-f3">Unlimited waiting queue</li>
+        <li data-i18n="p3-f4">Prescriptions & invoices</li>
+        <li data-i18n="p3-f5">Premium after-sales service</li>
+        <li data-i18n="p3-f6">24/7 VIP support</li>
+        <li data-i18n="p3-f7">Free updates for 3 years</li>
+        <li data-i18n="p3-f8">Free setup & customization</li>
+      </ul>
+      <button class="plan-btn plan-btn-premium" id="p3-btn" onclick="selectPlan('p3')">Choose Plan</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ORDER FORM -->
+<div class="order-section" id="order">
+  <div class="order-inner">
+    <div class="reveal">
+      <div class="section-tag" data-i18n="order-tag">Order Now</div>
+      <div class="section-title" data-i18n="order-title">Start Your MediFlow Journey</div>
+      <p class="section-desc" style="margin:0 auto;text-align:center" data-i18n="order-desc">
+        Submit your request now and our team will contact you within 24 hours to complete the subscription and deliver your license key.
+      </p>
+    </div>
+
+    <div class="order-form-wrap reveal" id="formWrap">
+      <div id="orderForm">
+        <div class="form-group">
+          <label class="form-label"><span class="req">*</span> <span data-i18n="form-name">Full Name</span></label>
+          <input class="form-input" id="fullName" type="text" data-placeholder-i18n="ph-name" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label"><span class="req">*</span> <span data-i18n="form-phone">Phone Number</span></label>
+          <input class="form-input" id="phone" type="tel" placeholder="+XX XXXXXXXXX" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label"><span class="req">*</span> <span data-i18n="form-city">City / Country</span></label>
+          <input class="form-input" id="location" type="text" data-placeholder-i18n="ph-city" placeholder="e.g. Paris, London, Dubai...">
+        </div>
+        <div class="form-group">
+          <label class="form-label"><span class="req">*</span> <span data-i18n="form-plan">Requested Plan</span></label>
+          <select class="form-input form-select" id="plan">
+            <option value="" data-i18n="plan-opt0">Select a plan...</option>
+            <option value="p1" data-i18n="plan-opt1">⭐ Starter — 5000 DZD / 5 months</option>
+            <option value="p2" data-i18n="plan-opt2">🌟 Annual — 8000 DZD / 12 months (Most Popular)</option>
+            <option value="p3" data-i18n="plan-opt3">👑 Premium — 15000 DZD / 3 years</option>
+          </select>
+        </div>
+        <button class="form-submit" id="submitBtn" onclick="submitOrder()">
+          <span data-i18n="form-submit">Send Request →</span>
+        </button>
+        <p class="form-note" data-i18n="form-note">
+          We will contact you by phone or WhatsApp within 24 hours to complete the subscription. Your information is safe and will never be shared.
+        </p>
+      </div>
+
+      <div class="form-success" id="formSuccess">
+        <div class="check"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg></div>
+        <h3 data-i18n="success-title">Request Sent Successfully!</h3>
+        <p><span data-i18n="success-msg1">Thank you</span> <strong id="successName"></strong>,<br><span data-i18n="success-msg2">our team will contact you at</span> <strong id="successPhone"></strong> <span data-i18n="success-msg3">within 24 hours to complete the subscription and deliver your license key.</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <img src="modiflowlogo.png" alt="MediFlow" style="height:30px"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <div class="footer-logo-text" style="display:none">Medi<span>Flow</span></div>
+  </div>
+  <p class="footer-desc" data-i18n="footer-desc">The most complete clinic management system — crafted with care for physicians worldwide.</p>
+  <div class="footer-bottom" data-i18n="footer-copy">© 2025 MediFlow — All rights reserved</div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════
+//  i18n TRANSLATIONS
+// ══════════════════════════════════════════
+const T = {
+  en: {
+    dir:'ltr', lang:'en', fontClass:'font-en',
+    'nav-cta':'Get Started',
+    'hero-badge':'✦ Complete Medical System',
+    'hero-h1':'Manage Your Clinic<br>Smarter with <span class="hl">MediFlow</span>',
+    'hero-desc':'A comprehensive clinic management system — from waiting queues and patient registration, to prescriptions, invoices, and statistics. Everything you need, in one place, in 10 languages.',
+    'hero-btn1':'Start Subscription',
+    'hero-btn2':'Explore Features',
+    'float1-label':'Today\'s Patients',
+    'float2-label':'Languages',
+    'float3-label':'Prescription',
+    'float3-val':'Ready ✓',
+    'feat-tag':'Features',
+    'feat-title':'Everything a Physician Needs',
+    'feat-desc':'MediFlow is designed specifically for medical clinics, with a simple interface and professional tools that guarantee smooth workflow.',
+    'f1-title':'Smart Waiting Queue',
+    'f1-desc':'Daily patient management with automatic numbering and queue card printing. Triage by priority and condition.',
+    'f2-title':'Professional Prescriptions',
+    'f2-desc':'Write prescriptions effortlessly with a comprehensive drug database and direct printing in a professional layout.',
+    'f3-title':'Invoicing & Analytics',
+    'f3-desc':'Generate invoices, track payments, and access detailed statistical reports about your clinic\'s performance.',
+    'f4-title':'10 Supported Languages',
+    'f4-desc':'Instant language switching: Arabic, French, English, Spanish, German, Turkish, Russian, Chinese, Portuguese, and Italian.',
+    'f5-title':'Patient Records',
+    'f5-desc':'Complete medical file for each patient: visit history, personal information, and prescription history.',
+    'f6-title':'Custom Branding',
+    'f6-desc':'Personalize prescription and invoice designs with your clinic\'s logo and complete contact details.',
+    'how-tag':'How It Works',
+    'how-title':'4 Simple Steps',
+    's1-title':'Choose a Plan',
+    's1-desc':'Select the subscription that best fits your clinic\'s size and budget from the available options.',
+    's2-title':'Send Your Request',
+    's2-desc':'Fill in the order form with your name, phone number, and location to receive instant confirmation.',
+    's3-title':'Receive Your License',
+    's3-desc':'We send your unique license key within 24 hours via WhatsApp or phone.',
+    's4-title':'Start Working',
+    's4-desc':'Activate the system with your key and start managing your clinic immediately with full support.',
+    'lic-title':'Protected License System',
+    'lic-desc':'MediFlow operates with a secure digital licensing system. Each subscription receives a unique license key linked to your device, ensuring system protection and your rights as a user.',
+    'li1':'Unique license key per client',
+    'li2':'Automatic activation on every launch',
+    'li3':'Device-bound — secure & protected',
+    'li4':'Validity tied to subscription period',
+    'li5':'After-sales service guaranteed',
+    'li6':'Easy subscription renewal',
+    'price-tag':'Pricing',
+    'price-title':'Choose Your Plan',
+    'price-desc':'Three plans designed to suit different clinic needs.',
+    'currency':'DZD',
+    'p1-badge':'Starter',
+    'p1-name':'5 Months',
+    'p1-period':'5-month subscription',
+    'p1-f1':'Activate on 2 PCs',
+    'p1-f2':'10 supported languages',
+    'p1-f3':'Unlimited waiting queue',
+    'p1-f4':'Prescriptions & invoices',
+    'p1-f5':'After-sales service',
+    'p1-f6':'WhatsApp support',
+    'p2-badge':'Most Popular ⭐',
+    'p2-name':'Full Year',
+    'p2-period':'12-month subscription',
+    'p2-f1':'Activate on 4 PCs',
+    'p2-f2':'10 supported languages',
+    'p2-f3':'Unlimited waiting queue',
+    'p2-f4':'Prescriptions & invoices',
+    'p2-f5':'After-sales service',
+    'p2-f6':'Priority WhatsApp support',
+    'p2-f7':'Free updates all year',
+    'p3-badge':'Best Value 👑',
+    'p3-name':'3 Years',
+    'p3-period':'36-month subscription',
+    'p3-f1':'Activate on 8 PCs',
+    'p3-f2':'10 supported languages',
+    'p3-f3':'Unlimited waiting queue',
+    'p3-f4':'Prescriptions & invoices',
+    'p3-f5':'Premium after-sales service',
+    'p3-f6':'24/7 VIP support',
+    'p3-f7':'Free updates for 3 years',
+    'p3-f8':'Free setup & customization',
+    'order-tag':'Order Now',
+    'order-title':'Start Your MediFlow Journey',
+    'order-desc':'Submit your request now and our team will contact you within 24 hours to complete the subscription and deliver your license key.',
+    'form-name':'Full Name',
+    'form-phone':'Phone Number',
+    'form-city':'City / Country',
+    'form-plan':'Requested Plan',
+    'ph-name':'Enter your full name',
+    'ph-city':'e.g. Paris, London, Dubai...',
+    'plan-opt0':'Select a plan...',
+    'plan-opt1':'⭐ Starter — 5000 DZD / 5 months',
+    'plan-opt2':'🌟 Annual — 8000 DZD / 12 months (Most Popular)',
+    'plan-opt3':'👑 Premium — 15000 DZD / 3 years',
+    'form-submit':'Send Request →',
+    'form-note':'We will contact you by phone or WhatsApp within 24 hours to complete the subscription. Your information is safe and will never be shared.',
+    'success-title':'Request Sent Successfully!',
+    'success-msg1':'Thank you',
+    'success-msg2':'our team will contact you at',
+    'success-msg3':'within 24 hours to complete the subscription and deliver your license key.',
+    'footer-desc':'The most complete clinic management system — crafted with care for physicians worldwide.',
+    'footer-copy':'© 2025 MediFlow — All rights reserved',
+    'alert-required':'Please fill in the required fields (Name, Phone, Plan)'
+  },
+  fr: {
+    dir:'ltr', lang:'fr', fontClass:'font-en',
+    'nav-cta':'Commencer',
+    'hero-badge':'✦ Système Médical Complet',
+    'hero-h1':'Gérez Votre Cabinet<br>Plus Intelligemment avec <span class="hl">MediFlow</span>',
+    'hero-desc':'Un système complet de gestion de cabinet médical — de la file d\'attente et l\'enregistrement des patients, jusqu\'aux ordonnances, factures et statistiques. Tout ce dont vous avez besoin, en un seul endroit, en 10 langues.',
+    'hero-btn1':'Commencer l\'abonnement',
+    'hero-btn2':'Découvrir les fonctionnalités',
+    'float1-label':'Patients Aujourd\'hui',
+    'float2-label':'Langues',
+    'float3-label':'Ordonnance',
+    'float3-val':'Prête ✓',
+    'feat-tag':'Fonctionnalités',
+    'feat-title':'Tout ce Dont le Médecin a Besoin',
+    'feat-desc':'MediFlow est conçu spécifiquement pour les cabinets médicaux, avec une interface simple et des outils professionnels garantissant un flux de travail fluide.',
+    'f1-title':'File d\'Attente Intelligente',
+    'f1-desc':'Gestion quotidienne des patients avec numérotation automatique et impression de cartes de file d\'attente. Tri par priorité et état.',
+    'f2-title':'Ordonnances Professionnelles',
+    'f2-desc':'Rédigez des ordonnances facilement avec une base de données médicaments complète et impression directe en mise en page professionnelle.',
+    'f3-title':'Facturation & Analyses',
+    'f3-desc':'Générez des factures, suivez les paiements et accédez à des rapports statistiques détaillés sur les performances de votre cabinet.',
+    'f4-title':'10 Langues Supportées',
+    'f4-desc':'Changement de langue instantané : Arabe, Français, Anglais, Espagnol, Allemand, Turc, Russe, Chinois, Portugais et Italien.',
+    'f5-title':'Dossiers Patients',
+    'f5-desc':'Dossier médical complet pour chaque patient : historique des visites, informations personnelles et historique des ordonnances.',
+    'f6-title':'Personnalisation',
+    'f6-desc':'Personnalisez les ordonnances et factures avec le logo de votre cabinet et vos coordonnées complètes.',
+    'how-tag':'Comment Ça Marche',
+    'how-title':'4 Étapes Simples',
+    's1-title':'Choisir un Forfait',
+    's1-desc':'Sélectionnez l\'abonnement adapté à la taille et au budget de votre cabinet parmi les options disponibles.',
+    's2-title':'Envoyer Votre Demande',
+    's2-desc':'Remplissez le formulaire avec votre nom, numéro de téléphone et localisation pour recevoir une confirmation immédiate.',
+    's3-title':'Recevoir Votre Licence',
+    's3-desc':'Nous vous envoyons votre clé de licence unique dans les 24 heures par WhatsApp ou téléphone.',
+    's4-title':'Commencer à Travailler',
+    's4-desc':'Activez le système avec votre clé et gérez votre cabinet immédiatement avec un support complet.',
+    'lic-title':'Système de Licence Protégé',
+    'lic-desc':'MediFlow fonctionne avec un système de licence numérique sécurisé. Chaque abonnement reçoit une clé de licence unique liée à votre appareil.',
+    'li1':'Clé de licence unique par client',
+    'li2':'Activation automatique à chaque lancement',
+    'li3':'Lié à votre appareil — sécurisé & protégé',
+    'li4':'Validité liée à la durée d\'abonnement',
+    'li5':'Service après-vente garanti',
+    'li6':'Renouvellement d\'abonnement facile',
+    'price-tag':'Tarifs',
+    'price-title':'Choisissez Votre Forfait',
+    'price-desc':'Trois forfaits conçus pour s\'adapter aux besoins de différents cabinets.',
+    'currency':'DZD',
+    'p1-badge':'Débutant',
+    'p1-name':'5 Mois',
+    'p1-period':'Abonnement 5 mois',
+    'p1-f1':'Activation sur 2 PC',
+    'p1-f2':'10 langues supportées',
+    'p1-f3':'File d\'attente illimitée',
+    'p1-f4':'Ordonnances & factures',
+    'p1-f5':'Service après-vente',
+    'p1-f6':'Support WhatsApp',
+    'p2-badge':'Le Plus Populaire ⭐',
+    'p2-name':'Année Complète',
+    'p2-period':'Abonnement 12 mois',
+    'p2-f1':'Activation sur 4 PC',
+    'p2-f2':'10 langues supportées',
+    'p2-f3':'File d\'attente illimitée',
+    'p2-f4':'Ordonnances & factures',
+    'p2-f5':'Service après-vente',
+    'p2-f6':'Support WhatsApp prioritaire',
+    'p2-f7':'Mises à jour gratuites toute l\'année',
+    'p3-badge':'Meilleur Rapport Qualité 👑',
+    'p3-name':'3 Ans',
+    'p3-period':'Abonnement 36 mois',
+    'p3-f1':'Activation sur 8 PC',
+    'p3-f2':'10 langues supportées',
+    'p3-f3':'File d\'attente illimitée',
+    'p3-f4':'Ordonnances & factures',
+    'p3-f5':'Service après-vente premium',
+    'p3-f6':'Support VIP 24h/24',
+    'p3-f7':'Mises à jour gratuites 3 ans',
+    'p3-f8':'Installation & personnalisation gratuite',
+    'order-tag':'Commander Maintenant',
+    'order-title':'Commencez Votre Parcours MediFlow',
+    'order-desc':'Soumettez votre demande maintenant et notre équipe vous contactera dans les 24 heures pour finaliser l\'abonnement et livrer votre clé de licence.',
+    'form-name':'Nom Complet',
+    'form-phone':'Numéro de Téléphone',
+    'form-city':'Ville / Pays',
+    'form-plan':'Forfait Demandé',
+    'ph-name':'Entrez votre nom complet',
+    'ph-city':'ex. Paris, Genève, Bruxelles...',
+    'plan-opt0':'Sélectionner un forfait...',
+    'plan-opt1':'⭐ Débutant — 5000 DZD / 5 mois',
+    'plan-opt2':'🌟 Annuel — 8000 DZD / 12 mois (Le Plus Populaire)',
+    'plan-opt3':'👑 Premium — 15000 DZD / 3 ans',
+    'form-submit':'Envoyer la Demande →',
+    'form-note':'Nous vous contacterons par téléphone ou WhatsApp dans les 24 heures. Vos informations sont sécurisées et ne seront jamais partagées.',
+    'success-title':'Demande Envoyée avec Succès !',
+    'success-msg1':'Merci',
+    'success-msg2':'notre équipe vous contactera au',
+    'success-msg3':'dans les 24 heures pour finaliser l\'abonnement et livrer votre clé de licence.',
+    'footer-desc':'Le système de gestion de cabinet le plus complet — conçu avec soin pour les médecins du monde entier.',
+    'footer-copy':'© 2025 MediFlow — Tous droits réservés',
+    'alert-required':'Veuillez remplir les champs obligatoires (Nom, Téléphone, Forfait)'
+  },
+  ar: {
+    dir:'rtl', lang:'ar', fontClass:'font-ar',
+    'nav-cta':'اطلب الآن',
+    'hero-badge':'✦ نظام طبي متكامل',
+    'hero-h1':'أدِر عيادتك بذكاء<br>مع <span class="hl">MediFlow</span>',
+    'hero-desc':'نظام إدارة عيادة طبية شامل — من قائمة الانتظار والتسجيل، إلى الوصفات الطبية والفواتير والإحصاءات. كل ما تحتاجه في مكان واحد، بـ 10 لغات.',
+    'hero-btn1':'ابدأ الاشتراك',
+    'hero-btn2':'اكتشف المميزات',
+    'float1-label':'المرضى اليوم',
+    'float2-label':'اللغات المدعومة',
+    'float3-label':'وصفة طبية',
+    'float3-val':'جاهزة ✓',
+    'feat-tag':'المميزات',
+    'feat-title':'كل ما يحتاجه الطبيب',
+    'feat-desc':'صُمم MediFlow خصيصاً للعيادات الطبية، بواجهة بسيطة وأدوات احترافية تضمن سير العمل بسلاسة.',
+    'f1-title':'قائمة انتظار ذكية',
+    'f1-desc':'إدارة المرضى يوميًا مع نظام ترقيم تلقائي وطباعة بطاقات الانتظار. تصنيف حسب الأولوية والحالة.',
+    'f2-title':'وصفات طبية احترافية',
+    'f2-desc':'اكتب الوصفات بسهولة مع قاعدة بيانات أدوية شاملة، وطباعة مباشرة بتصميم احترافي.',
+    'f3-title':'فواتير وإحصاءات',
+    'f3-desc':'إنشاء الفواتير وتتبع المدفوعات مع تقارير إحصائية تفصيلية عن العيادة.',
+    'f4-title':'10 لغات مدعومة',
+    'f4-desc':'تبديل اللغة لحظياً: العربية، الفرنسية، الإنجليزية، الإسبانية، الألمانية، التركية، الروسية، الصينية، البرتغالية، والإيطالية.',
+    'f5-title':'ملفات المرضى',
+    'f5-desc':'سجل طبي كامل لكل مريض مع تاريخ الزيارات والمعلومات الشخصية وسجل الوصفات.',
+    'f6-title':'تصميم مخصص',
+    'f6-desc':'خصص تصميم الوصفات والفواتير بشعار عيادتك وبياناتك الكاملة.',
+    'how-tag':'كيف يعمل',
+    'how-title':'في 4 خطوات بسيطة',
+    's1-title':'اختر الباقة',
+    's1-desc':'اختر الاشتراك المناسب لحجم عيادتك وميزانيتك من الخيارات المتاحة.',
+    's2-title':'أرسل طلبك',
+    's2-desc':'املأ نموذج الطلب باسمك ورقمك وموقعك واستلم تأكيداً فورياً.',
+    's3-title':'استلم الترخيص',
+    's3-desc':'نرسل لك مفتاح الترخيص الخاص بك خلال 24 ساعة عبر الواتساب أو الهاتف.',
+    's4-title':'ابدأ العمل',
+    's4-desc':'فعّل النظام بمفتاحك وابدأ إدارة عيادتك فوراً مع دعم كامل.',
+    'lic-title':'نظام ترخيص محمي',
+    'lic-desc':'يعمل MediFlow بنظام ترخيص رقمي آمن. كل اشتراك يحصل على مفتاح ترخيص فريد مرتبط بجهازك، يضمن حماية النظام وحقوقك كمستخدم.',
+    'li1':'مفتاح ترخيص فريد لكل عميل',
+    'li2':'تفعيل تلقائي عند كل تشغيل',
+    'li3':'مرتبط بجهازك — آمن ومحمي',
+    'li4':'صلاحية حسب مدة الاشتراك',
+    'li5':'خدمة ما بعد البيع مضمونة',
+    'li6':'إمكانية تجديد الاشتراك بسهولة',
+    'price-tag':'الأسعار',
+    'price-title':'اختر الباقة المناسبة',
+    'price-desc':'ثلاث باقات مصممة لتناسب احتياجات مختلف العيادات.',
+    'currency':'دج',
+    'p1-badge':'باقة البداية',
+    'p1-name':'5 أشهر',
+    'p1-period':'اشتراك لمدة 5 أشهر',
+    'p1-f1':'تفعيل على جهازَين (2 PC)',
+    'p1-f2':'10 لغات مدعومة',
+    'p1-f3':'قائمة انتظار غير محدودة',
+    'p1-f4':'وصفات طبية وفواتير',
+    'p1-f5':'خدمة ما بعد البيع',
+    'p1-f6':'دعم عبر الواتساب',
+    'p2-badge':'الأكثر طلباً ⭐',
+    'p2-name':'سنة كاملة',
+    'p2-period':'اشتراك لمدة 12 شهراً',
+    'p2-f1':'تفعيل على 4 أجهزة (4 PC)',
+    'p2-f2':'10 لغات مدعومة',
+    'p2-f3':'قائمة انتظار غير محدودة',
+    'p2-f4':'وصفات طبية وفواتير',
+    'p2-f5':'خدمة ما بعد البيع',
+    'p2-f6':'دعم أولوية عبر الواتساب',
+    'p2-f7':'تحديثات مجانية طوال السنة',
+    'p3-badge':'الأفضل قيمة 👑',
+    'p3-name':'3 سنوات',
+    'p3-period':'اشتراك لمدة 36 شهراً',
+    'p3-f1':'تفعيل على 8 أجهزة (8 PC)',
+    'p3-f2':'10 لغات مدعومة',
+    'p3-f3':'قائمة انتظار غير محدودة',
+    'p3-f4':'وصفات طبية وفواتير',
+    'p3-f5':'خدمة ما بعد البيع المميزة',
+    'p3-f6':'دعم VIP على مدار الساعة',
+    'p3-f7':'تحديثات مجانية لـ 3 سنوات',
+    'p3-f8':'إعداد وتخصيص مجاني',
+    'order-tag':'اطلب الآن',
+    'order-title':'ابدأ رحلتك مع MediFlow',
+    'order-desc':'أرسل طلبك الآن وسيتواصل معك فريقنا خلال 24 ساعة لإتمام الاشتراك وتسليم مفتاح الترخيص.',
+    'form-name':'الاسم الكامل',
+    'form-phone':'رقم الهاتف',
+    'form-city':'المدينة / الدولة',
+    'form-plan':'الباقة المطلوبة',
+    'ph-name':'أدخل اسمك الكامل',
+    'ph-city':'مثال: وهران، القاهرة، دبي...',
+    'plan-opt0':'اختر الباقة...',
+    'plan-opt1':'⭐ باقة البداية — 5000 دج / 5 أشهر',
+    'plan-opt2':'🌟 باقة السنة — 8000 دج / 12 شهراً (الأكثر طلباً)',
+    'plan-opt3':'👑 الباقة المميزة — 15000 دج / 3 سنوات',
+    'form-submit':'إرسال الطلب ←',
+    'form-note':'سيتم التواصل معك عبر الهاتف أو الواتساب خلال 24 ساعة لإتمام الاشتراك. معلوماتك آمنة ولن تُشارك مع أي جهة.',
+    'success-title':'تم إرسال طلبك بنجاح!',
+    'success-msg1':'شكراً',
+    'success-msg2':'سيتواصل معك فريقنا على الرقم',
+    'success-msg3':'خلال 24 ساعة لإتمام الاشتراك وتسليم مفتاح الترخيص.',
+    'footer-desc':'نظام إدارة العيادة الطبية الأكثر تكاملاً — مصنوع بعناية للأطباء حول العالم.',
+    'footer-copy':'© 2025 MediFlow — جميع الحقوق محفوظة',
+    'alert-required':'يرجى ملء الحقول المطلوبة (الاسم، الهاتف، الباقة)'
+  }
+};
+
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = T[lang];
+  const html = document.documentElement;
+  const body = document.body;
+
+  // Direction & lang
+  html.setAttribute('lang', t.lang);
+  html.setAttribute('dir', t.dir);
+  body.setAttribute('lang', t.lang);
+
+  // Font
+  body.style.fontFamily = lang === 'ar' ? "var(--font-ar)" : "var(--font-en)";
+
+  // Update lang buttons
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + lang).classList.add('active');
+
+  // Form alignment
+  const formWrap = document.getElementById('formWrap');
+  if(formWrap) formWrap.style.textAlign = t.dir === 'rtl' ? 'right' : 'left';
+
+  // nav-cta
+  document.getElementById('nav-cta-btn').textContent = t['nav-cta'];
+
+  // Update all [data-i18n] elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if(t[key] !== undefined) el.innerHTML = t[key];
+  });
+
+  // Update placeholders
+  document.querySelectorAll('[data-placeholder-i18n]').forEach(el => {
+    const key = el.getAttribute('data-placeholder-i18n');
+    if(t[key] !== undefined) el.placeholder = t[key];
+  });
+
+  // Update plan select options
+  const sel = document.getElementById('plan');
+  if(sel) {
+    const opts = sel.querySelectorAll('option[data-i18n]');
+    opts.forEach(opt => {
+      const key = opt.getAttribute('data-i18n');
+      if(t[key]) opt.textContent = t[key];
+    });
+  }
+}
+
+// ─── SELECT PLAN ───
+function selectPlan(planKey) {
+  const sel = document.getElementById('plan');
+  if(sel) sel.value = planKey;
+  document.getElementById('order').scrollIntoView({behavior:'smooth'});
+}
+
+// ─── SUBMIT ORDER ───
+async function submitOrder() {
+  const name = document.getElementById('fullName').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const location = document.getElementById('location').value.trim();
+  const plan = document.getElementById('plan').value;
+  const t = T[currentLang];
+
+  if(!name || !phone || !plan) {
+    alert(t['alert-required']);
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  const origText = btn.querySelector('[data-i18n]')?.innerHTML || btn.textContent;
+  btn.textContent = currentLang === 'ar' ? 'جاري الإرسال...' : currentLang === 'fr' ? 'Envoi en cours...' : 'Sending...';
+
+  try {
+    const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('phone', phone);
+    formData.append('location', location || '-');
+    formData.append('plan', plan);
+    formData.append('lang', currentLang);
+    formData.append('date', new Date().toLocaleDateString());
+    await fetch(SCRIPT_URL, { method:'POST', body:formData, mode:'no-cors' });
+  } catch(e) {}
+
+  document.getElementById('successName').textContent = name;
+  document.getElementById('successPhone').textContent = phone;
+  document.getElementById('orderForm').style.display = 'none';
+  document.getElementById('formSuccess').style.display = 'block';
+}
+
+// ─── SCROLL REVEAL ───
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Init default language
+setLang('en');
+</script>
+</body>
+</html>
